@@ -6,9 +6,9 @@
   
 
 ###使い方  
-まず`scp_backuper.sh`の5, 6, 7行目のところで`scp_backuper.conf`と`.scp_backuper`, `known_dir`を置くパスを好きなところに書き換えます。(書き換えなくてもいい。)
-`.scp_backuper`と`known_dir`は初回実行時に、指定したパスに生成されます。
-`scp_backuper`は実行するとまず`scp_backuper.conf`を見に行き、実行に必要な情報を得ます。その後scpコマンドを実行し、最後に`.scp_backuper`と`known_dir`を作ります。2回目からは`.scp_backuper`より更新日時が新しい物のみコピーします。  
+まず`scp_backuper.sh`の5, 6, 7行目のところで`scp_backuper.conf`と`.latest_backup_date`, `known_dir`を置くパスを好きなところに書き換えます。(書き換えなくてもいい。)
+`.latest_backup_date`と`known_dir`は初回実行時に、指定したパスに生成されます。
+`scp_backuper`は実行するとまず`scp_backuper.conf`を見に行き、実行に必要な情報を得ます。その後scpコマンドを実行し、最後に`.latest_backup_date`と`known_dir`を作ります。2回目からは`.latest_backup_date`より更新日時が新しい物のみコピーします。  
 `scp_backuper.conf`はscpコマンドに必要な情報等を持ちます。  
 `known_dir`はバックアップ対象のディレクトリと、そこに含まれるサブディレクトリのパスを持ちます。バックアップ元のディレクトリに新しいサブディレクトリが作られたかどうかを確認するためです。
 

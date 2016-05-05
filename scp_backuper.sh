@@ -41,8 +41,6 @@ func () {
         for filePath in ${1}*; do
                 if [ -f $filePath ]; then
                         fileArray+=("$filePath")
-                #elif [ -d $filePath ]; then
-                        #dirArray+=("$filePath")
                 fi
         done
         #echo "------File----"

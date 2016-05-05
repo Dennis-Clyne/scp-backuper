@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #CONFIG_FILE="${HOME}/scp-backuper/scp_backuper.conf"
-#DATE_FILE="${HOME}/.scp_backuper"
+#DATE_FILE="${HOME}/.latest_backup_date"
 CONFIG_FILE="/etc/scp_backuper/scp_backuper.conf"
-DATE_FILE="/etc/scp_backuper/.scp_backuper"
+DATE_FILE="/etc/scp_backuper/.latest_backup_date"
 KNOWN_DIR_FILE="/etc/scp_backuper/known_dir"
 USER_NAME=:
 IP=:

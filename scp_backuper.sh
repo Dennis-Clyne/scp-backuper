@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#CONFIG_FILE="./scp_backuper.conf"
 #CONFIG_FILE="${HOME}/scp-backuper/scp_backuper.conf"
 CONFIG_FILE="/etc/scp_backuper/scp_backuper.conf"
 USER_NAME=:

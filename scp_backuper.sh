@@ -2,14 +2,14 @@
 
 #CONFIG_FILE="${HOME}/scp-backuper/scp_backuper.conf"
 CONFIG_FILE="/etc/scp_backuper/scp_backuper.conf"
+DATE_FILE="/etc/scp_backuper/.scp_backuper"
+#DATE_FILE="${HOME}/.scp_backuper"
 USER_NAME=:
 IP=:
 PORT=:
 KEY=:
 BACKUP_DIR=: # backup先
 BACKUP_TARGET=: # backup元
-#DATE_FILE="${HOME}/.scp_backuper"
-DATE_FILE="/etc/scp_backuper/.scp_backuper"
 
 for line in `cat ${CONFIG_FILE}`; do
         config_file+=($line) 

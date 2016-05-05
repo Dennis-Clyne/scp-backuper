@@ -1,9 +1,10 @@
 #!/bin/bash
 
 #CONFIG_FILE="${HOME}/scp-backuper/scp_backuper.conf"
+#DATE_FILE="${HOME}/.scp_backuper"
 CONFIG_FILE="/etc/scp_backuper/scp_backuper.conf"
 DATE_FILE="/etc/scp_backuper/.scp_backuper"
-#DATE_FILE="${HOME}/.scp_backuper"
+KNOWN_DIR_FILE="/etc/scp_backuper/known_dir"
 USER_NAME=:
 IP=:
 PORT=:
@@ -13,6 +14,7 @@ BACKUP_TARGET=: # backup元
 
 for line in `cat ${CONFIG_FILE}`; do
         config_file+=($line) 
+        #echo $line
 done
 
 for i in `seq 0 ${#config_file[*]}`; do
@@ -37,7 +39,7 @@ done
 func () {
         TARGET_FILES=""
         fileArray=()
-        dirArray=()
+        dirArrayX=()
         for filePath in ${1}*; do
                 if [ -f $filePath ]; then
                         fileArray+=("$filePath")
@@ -57,12 +59,23 @@ func () {
         fi
         #echo "------Dir-----"
         for i in `ls ${1} -F | grep /`; do
-                dirArray+=("$i")
+                flag=0
+                for line in `cat ${KNOWN_DIR_FILE}`; do
+                        if [ "$1$i" = $line ]; then
+                                flag=1
+                                dirArrayX+=("$i")
+                        fi
+                done
+                if [ $flag = 0 ]; then
+                        f=`scp -r -i ${KEY} -P ${PORT} $1$i ${USER_NAME}@${IP}:${BACKUP_DIR}/$2`
+                        echo $f
+                        echo "$1$i" >>${KNOWN_DIR_FILE}
+                fi
         done
-        for i in ${dirArray[@]}; do
+        for i in ${dirArrayX[@]}; do
                 if [ "$1$i" -nt ${DATE_FILE} ]; then
                         #echo $i
-                        func "$1$i" $i
+                        func "$1$i" "$2$i" "$2"
                 fi
         done
 }
@@ -70,12 +83,33 @@ func () {
 save_date=`date +%Y/%m/%d`
 save_date="${save_date} `date +%H:%M`"
 
+outDirArray=()
+dirSearch() {
+        dirArray=()
+        for dirPath in ${1}/*; do
+                if [ -d $dirPath ]; then
+                        outDirArray+=("$dirPath")
+                        dirArray+=("$dirPath")
+                fi
+        done
+        for i in ${dirArray[@]}; do
+                func $i
+        done
+}
+
 if [ -e $DATE_FILE ]; then
         func "${BACKUP_TARGET}/" "./"
         echo $save_date >${DATE_FILE}
 else 
+        #echo "first"
         f=`scp -r -i ${KEY} -P ${PORT} ${BACKUP_TARGET}/* ${USER_NAME}@${IP}:${BACKUP_DIR}`
         echo $f
+
+        dirSearch ${BACKUP_TARGET}
+        for i in ${outDirArray[@]}; do
+                echo "${i}/" >>${KNOWN_DIR_FILE}
+        done
+
         echo $save_date >${DATE_FILE}
 fi
 

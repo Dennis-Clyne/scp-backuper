@@ -13,7 +13,6 @@ DATE_FILE="/etc/scp_backuper/.scp_backuper"
 
 for line in `cat ${CONFIG_FILE}`; do
         config_file+=($line) 
-        #echo $line
 done
 
 for i in `seq 0 ${#config_file[*]}`; do

@@ -14,7 +14,6 @@ BACKUP_TARGET=: # backup元
 
 for line in `cat ${CONFIG_FILE}`; do
         config_file+=($line) 
-        #echo $line
 done
 
 for i in `seq 0 ${#config_file[*]}`; do
@@ -36,10 +35,10 @@ done
 #echo "BACKUP_TARGET = ${BACKUP_TARGET}"
 #echo "DATE_FILE = ${DATE_FILE}"
 
-func () {
+explorer () {
         TARGET_FILES=""
         fileArray=()
-        dirArrayX=()
+        dirArray=()
         for filePath in ${1}*; do
                 if [ -f $filePath ]; then
                         fileArray+=("$filePath")
@@ -48,7 +47,6 @@ func () {
         #echo "------File----"
         for i in ${fileArray[@]}; do
                 if [ $i -nt ${DATE_FILE} ]; then
-                        #echo "${i} new"
                         TARGET_FILES="${TARGET_FILES} $i"
                 fi
         done
@@ -63,7 +61,7 @@ func () {
                 for line in `cat ${KNOWN_DIR_FILE}`; do
                         if [ "$1$i" = $line ]; then
                                 flag=1
-                                dirArrayX+=("$i")
+                                dirArray+=("$i")
                         fi
                 done
                 if [ $flag = 0 ]; then
@@ -72,41 +70,39 @@ func () {
                         echo "$1$i" >>${KNOWN_DIR_FILE}
                 fi
         done
-        for i in ${dirArrayX[@]}; do
+        for i in ${dirArray[@]}; do
                 if [ "$1$i" -nt ${DATE_FILE} ]; then
-                        #echo $i
-                        func "$1$i" "$2$i" "$2"
+                        explorer "$1$i" "$2$i" "$2"
                 fi
+        done
+}
+
+firstDirArray=()
+firstExplorer() {
+        dirArray=()
+        for dirPath in ${1}/*; do
+                if [ -d $dirPath ]; then
+                        firstDirArray+=("$dirPath")
+                        dirArray+=("$dirPath")
+                fi
+        done
+        for i in ${dirArray[@]}; do
+                firstExplorer $i
         done
 }
 
 save_date=`date +%Y/%m/%d`
 save_date="${save_date} `date +%H:%M`"
 
-outDirArray=()
-dirSearch() {
-        dirArray=()
-        for dirPath in ${1}/*; do
-                if [ -d $dirPath ]; then
-                        outDirArray+=("$dirPath")
-                        dirArray+=("$dirPath")
-                fi
-        done
-        for i in ${dirArray[@]}; do
-                func $i
-        done
-}
-
 if [ -e $DATE_FILE ]; then
-        func "${BACKUP_TARGET}/" "./"
+        explorer "${BACKUP_TARGET}/" "./"
         echo $save_date >${DATE_FILE}
 else 
-        #echo "first"
         f=`scp -r -i ${KEY} -P ${PORT} ${BACKUP_TARGET}/* ${USER_NAME}@${IP}:${BACKUP_DIR}`
         echo $f
 
-        dirSearch ${BACKUP_TARGET}
-        for i in ${outDirArray[@]}; do
+        firstExplorer ${BACKUP_TARGET}
+        for i in ${firstDirArray[@]}; do
                 echo "${i}/" >>${KNOWN_DIR_FILE}
         done
 

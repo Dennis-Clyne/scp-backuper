@@ -36,7 +36,6 @@ done
 #echo "DATE_FILE = ${DATE_FILE}"
 
 ##第一引数のディレクトリ内の更新されたファイルやディレクトリをコピーする
-##再帰により第一引数のディレクトリ以下の更新されたディレクトリをすべて探索する
 explorer () {
         TARGET_FILES="" #更新されてるファイルのパスをスペース区切りで入れる
         fileArray=()
@@ -86,7 +85,6 @@ explorer () {
 
 ##known_dirを作るためにディレクトリを集める関数。
 ##第一引数のディレクトリ内のすべてのディレクトリをfirstDirArrayに入れる。       
-##再帰により第一引数のディレクトリ以下のディレクトリをすべて探してfirstDirArrayに入れる。
 firstExplorer() {
         dirArray=()
         for dirPath in ${1}/*; do

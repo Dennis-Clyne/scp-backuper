@@ -77,9 +77,7 @@ explorer () {
         done
 
         for i in ${dirArray[@]}; do
-                if [ "$1$i" -nt ${DATE_FILE} ]; then
-                        explorer "$1$i" "$2$i" "$2"
-                fi
+                explorer "$1$i" "$2$i" "$2"
         done
 }
 
@@ -98,24 +96,28 @@ firstExplorer() {
         done
 }
 
-save_date=`date +%Y/%m/%d`
-save_date="${save_date} `date +%H:%M`"
-
-if [ -e $DATE_FILE ]; then
-        explorer "${BACKUP_TARGET}/" "./"
-        echo $save_date >${DATE_FILE}
-else 
-        f=`scp -r -i ${KEY} -P ${PORT} ${BACKUP_TARGET}/* ${USER_NAME}@${IP}:${BACKUP_DIR}`
-        echo $f
-
-        firstExplorer ${BACKUP_TARGET}
-        for i in ${firstDirArray[@]}; do
-                echo "${i}/" >>${KNOWN_DIR_FILE}
-        done
-
-        echo $save_date >${DATE_FILE}
+ping -q -c3 $IP >/dev/null
+if [ $? = 0 ]; then
+        save_date=`date +%Y/%m/%d`
+        save_date="${save_date} `date +%H:%M`"
+        
+        if [ -e $DATE_FILE ]; then
+                explorer "${BACKUP_TARGET}/" "./"
+                echo $save_date >${DATE_FILE}
+        else 
+                f=`scp -r -i ${KEY} -P ${PORT} ${BACKUP_TARGET}/* ${USER_NAME}@${IP}:${BACKUP_DIR}`
+                echo $f
+        
+                firstExplorer ${BACKUP_TARGET}
+                for i in ${firstDirArray[@]}; do
+                        echo "${i}/" >>${KNOWN_DIR_FILE}
+                done
+        
+                echo $save_date >${DATE_FILE}
+        fi
+else
+        echo "server not found"
 fi
-
 
 
 
